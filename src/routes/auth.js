@@ -6,8 +6,6 @@ const {signUpValidation, loginValidation} = require('../utils/validator');
 const authRouter = express.Router();
 
 authRouter.post("/signup", async(req, res) => {
-    
-    
     try{
         signUpValidation(req);
         const {firstName, lastName, email, password} = req.body;
@@ -45,6 +43,11 @@ authRouter.post("/login", async(req,res) => {
     }
     
 
+})
+
+authRouter.post("/logout", (req, res) => {
+    res.cookie("token", null, {expires: new Date(Date.now())});
+    res.send("Logout Successful");
 })
 
 module.exports = authRouter;

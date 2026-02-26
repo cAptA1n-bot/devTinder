@@ -19,4 +19,16 @@ const loginValidation = (email) => {
     }
 }
 
-module.exports = {signUpValidation, loginValidation};
+const editDataValidation = (req) => {
+    const editableData = ["firstName", "lastName", "age", "gender", "skills", "photoUrl", "about"];
+    isEditAllowed = Object.keys(req.body).every((field) => editableData.includes(field));
+    return isEditAllowed;
+}
+
+const isStrongPass = (pass) => {
+    if(!validator.isStrongPassword(pass)){
+        throw new Error("Password too weak");
+    }
+}
+
+module.exports = {signUpValidation, loginValidation, editDataValidation, isStrongPass};
