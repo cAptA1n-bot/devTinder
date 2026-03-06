@@ -1,6 +1,6 @@
 const express = require('express');
 const {userAuth} = require('../middleware/auth');
-const {editDataValidation, isStrongPass} = require('../utils/validator');
+const {editDataValidation, isStrongPass, validateAge} = require('../utils/validator');
 const bcrypt = require('bcrypt');
 
 const profileRouter = express.Router();
@@ -20,14 +20,14 @@ profileRouter.patch("/profile/edit", userAuth, async(req,res) => {
         if(!editDataValidation(req)){
             res.status(404).send("Invalid edit request");
         }
-
+        validateAge(req.body.age);
         const loggedInUser = req.user;
         Object.keys(req.body).forEach(key => loggedInUser[key] = req.body[key])
         await loggedInUser.save();
         res.json({message: `${loggedInUser.firstName}'s profile updated successfuly`, data: loggedInUser});
     }
     catch(err){
-        res.send("ERROR: "+err.message);
+        res.status(400).send("ERROR: "+err.message);
     }
 })
 

@@ -31,4 +31,10 @@ const isStrongPass = (pass) => {
     }
 }
 
-module.exports = {signUpValidation, loginValidation, editDataValidation, isStrongPass};
+const validateAge = (age) => {
+    if(isNaN(Number(age))){
+        throw new Error("Age is invalid");
+    }
+}
+
+module.exports = {signUpValidation, loginValidation, editDataValidation, isStrongPass, validateAge};
