@@ -6,7 +6,7 @@ const User = require('../models/user')
 
 const USER_SAFE_DATA = "firstName lastName about photoUrl age gender skills";
 
-userRouter.post('/user/requests/received', userAuth, async (req, res) => {
+userRouter.get('/user/requests/received', userAuth, async (req, res) => {
     try{
         const loggedinUser = req.user;
         const requests = await connectionRequest.find({
