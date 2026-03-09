@@ -33,7 +33,7 @@ const isStrongPass = (pass) => {
 
 const validateAge = (age) => {
     
-    if(age === "" || age === null || isNaN(Number(age))){
+    if(age === "" || age === null || age === undefined || isNaN(Number(age))){
         throw new Error("Age is invalid");
     }
 }
