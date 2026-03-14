@@ -2,6 +2,7 @@ const express = require('express');
 const User = require("../models/user");
 const bcrypt = require('bcrypt');
 const {signUpValidation, loginValidation} = require('../utils/validator');
+const sendEmail = require("../utils/sendEmail.js");
 
 const authRouter = express.Router();
 
@@ -12,6 +13,10 @@ authRouter.post("/signup", async(req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({firstName, lastName, email, password: hashedPassword});
         const savedUser = await user.save();
+
+        const emailRes = await sendEmail.run();
+        console.log(emailRes)
+
         const token = await user.getJwt();
         res.cookie("token", token, {expires: new Date(Date.now() + 7*24*60*60*1000)});
         res.json({message:"SignUp successfull", data: savedUser});
