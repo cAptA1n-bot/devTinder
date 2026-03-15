@@ -15,7 +15,6 @@ authRouter.post("/signup", async(req, res) => {
         const savedUser = await user.save();
 
         const emailRes = await sendEmail.run();
-        console.log(emailRes)
 
         const token = await user.getJwt();
         res.cookie("token", token, {expires: new Date(Date.now() + 7*24*60*60*1000)});
