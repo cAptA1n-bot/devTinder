@@ -14,7 +14,7 @@ authRouter.post("/signup", async(req, res) => {
         const user = new User({firstName, lastName, email, password: hashedPassword});
         const savedUser = await user.save();
 
-        const emailRes = await sendEmail.run();
+        const emailRes = await sendEmail.run("Welcome to DevTinder!", "We welcome you to the amazing community of DevTinder we hope you enjoy the company.");
 
         const token = await user.getJwt();
         res.cookie("token", token, {expires: new Date(Date.now() + 7*24*60*60*1000)});
