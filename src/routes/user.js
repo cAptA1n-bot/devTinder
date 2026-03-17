@@ -2,7 +2,7 @@ const express = require('express');
 const userRouter = express.Router();
 const {userAuth} = require('../middleware/auth');
 const connectionRequest = require('../models/ConnectionRequest');
-const User = require('../models/user')
+const User = require('../models/user');
 
 const USER_SAFE_DATA = "firstName lastName about photoUrl age gender skills";
 
@@ -45,6 +45,28 @@ userRouter.get('/user/connections', userAuth, async(req, res) => {
         res.status(400).send({message: err.message})
     }
     
+})
+
+userRouter.delete('/user/connections/:userId', userAuth, async(req, res) => {
+    const loggedInUser = req.user;
+    connectedUserId = req.params.userId;
+
+    try{
+        const connections = await connectionRequest.find({
+            $or: [
+                {fromUserId: connectedUserId , toUserId: loggedInUser._id},
+                {fromUserId: loggedInUser._id, toUserId: connectedUserId}
+            ]
+        })
+        if(connections.length === 0){
+            return res.status(404).send("User not found")
+        }
+        await connectionRequest.deleteOne({_id: connections[0]._id});
+        res.status(204).json({"message": "Conneciton removed"});
+    }
+    catch(err){
+        res.status(400).send("Unable to fulfill request");
+    }
 })
 
 userRouter.get('/feed', userAuth, async(req, res) => {
