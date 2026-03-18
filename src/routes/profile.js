@@ -38,7 +38,7 @@ profileRouter.patch("/profile/password", userAuth, async(req, res) => {
         return res.status(400).send("invalid");
     }
     if(oldPassword === newPassword){
-        return res.send("can not set same password again");
+        return res.status(400).send("can not set same password again");
     }
     isStrongPass(newPassword);
     const newHashedPassword = await bcrypt.hash(newPassword, 10);
@@ -47,7 +47,7 @@ profileRouter.patch("/profile/password", userAuth, async(req, res) => {
     loggedInUser.tokens = [];
     await loggedInUser.save();
     res.clearCookie("token");
-    res.send("Password changed successfuly. Login again!");
+    res.status(200).send("Password changed successfuly. Login again!");
     }
     catch(err){
         res.status(400).send("ERROR: "+ err.message)
