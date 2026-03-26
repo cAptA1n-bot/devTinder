@@ -6,9 +6,13 @@ const authRouter = require('./routes/auth')
 const profileRouter = require('./routes/profile');
 const requestRouter = require('./routes/request');
 const userRouter = require('./routes/user');
+const http = require('http');
+const {initializeSocket} = require('./utils/socket');
 const cors = require('cors');
 
+
 const app = express();
+
 
 require("./utils/cronjob.js");
 
@@ -24,11 +28,14 @@ app.use('/', profileRouter);
 app.use('/', requestRouter);
 app.use('/', userRouter);
 
+const server = http.createServer(app);
+initializeSocket(server);
+
 
 connectDB()
     .then(() => {
         console.log("Database connection established...")
-        app.listen(process.env.PORT, () => {
+        server.listen(process.env.PORT, () => {
             console.log(`Server listening on port ${process.env.PORT}...`);
         })
     })
