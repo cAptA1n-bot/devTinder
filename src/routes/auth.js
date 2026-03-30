@@ -12,7 +12,7 @@ authRouter.post("/signup", async(req, res) => {
         const {firstName, lastName, email, password} = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({firstName, lastName, email, password: hashedPassword});
-        const savedUser = await user.save();
+        const savedUser = await user.save();    
 
         const emailRes = await sendEmail.run("Welcome to DevTinder!", "We welcome you to the amazing community of DevTinder we hope you enjoy the company.");
 
