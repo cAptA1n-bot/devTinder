@@ -3,6 +3,7 @@ const User = require("../models/user");
 const bcrypt = require('bcrypt');
 const {signUpValidation, loginValidation} = require('../utils/validator');
 const sendEmail = require("../utils/sendEmail.js");
+const { limiter } = require("../utils/rateLimiter.js");
 
 const authRouter = express.Router();
 
@@ -12,7 +13,7 @@ authRouter.post("/signup", async(req, res) => {
         const {firstName, lastName, email, password} = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({firstName, lastName, email, password: hashedPassword});
-        const savedUser = await user.save();    
+        const savedUser = await user.save();
 
         const emailRes = await sendEmail.run("Welcome to DevTinder!", "We welcome you to the amazing community of DevTinder we hope you enjoy the company.");
 
@@ -26,7 +27,7 @@ authRouter.post("/signup", async(req, res) => {
     }
 })
 
-authRouter.post("/login", async(req,res) => {
+authRouter.post("/login", limiter(60 * 1000, 2), async(req,res) => {
     try{
         const {email, password} = req.body;
     loginValidation(email);

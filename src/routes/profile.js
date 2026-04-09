@@ -2,6 +2,7 @@ const express = require('express');
 const {userAuth} = require('../middleware/auth');
 const {editDataValidation, isStrongPass, validateAge} = require('../utils/validator');
 const bcrypt = require('bcrypt');
+const {client} = require('../utils/redisClient.js')
 
 const profileRouter = express.Router();
 
@@ -24,6 +25,7 @@ profileRouter.patch("/profile/edit", userAuth, async(req,res) => {
         const loggedInUser = req.user;
         Object.keys(req.body).forEach(key => loggedInUser[key] = req.body[key])
         await loggedInUser.save();
+        await client.del(`user:${loggedInUser._id}`)
         res.json({message: `${loggedInUser.firstName}'s profile updated successfuly`, data: loggedInUser});
     }
     catch(err){

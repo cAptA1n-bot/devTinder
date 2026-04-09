@@ -10,6 +10,7 @@ const http = require('http');
 const {initializeSocket} = require('./utils/socket');
 const cors = require('cors');
 const chatRouter = require('./routes/chat.js');
+const { connectRedis } = require('./utils/redisClient');
 
 
 const app = express();
@@ -37,6 +38,7 @@ initializeSocket(server);
 connectDB()
     .then(() => {
         console.log("Database connection established...")
+        connectRedis();
         server.listen(process.env.PORT, () => {
             console.log(`Server listening on port ${process.env.PORT}...`);
         })
