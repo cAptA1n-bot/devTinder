@@ -1,10 +1,22 @@
-const rateLimit = require('express-rate-limit');
+const {client} = require('./redisClient');
 
-const limiter = (time, limit) => {
-    return rateLimit({
-    windowMs: time,
-    limit: limit,
-    message: "Too many login attempts from this IP, please try again after a minute"
-});
-};
-module.exports = { limiter };
+const rateLimiter = (limit, window, bucket) => {
+    return async (req, res, next) => {
+        try{
+            const key = `rate:${req.ip}:${bucket}`;
+            const count = await client.incr(key); 
+            if(count === 1){
+                await client.expire(key, window);
+            }
+            if(count > limit){
+                return res.status(429).json({message: "Too many requests"});
+            }
+            next();
+        }
+        catch(error){
+            next();
+        }
+    }
+}
+
+module.exports = {rateLimiter};

@@ -3,7 +3,7 @@ const User = require("../models/user");
 const bcrypt = require('bcrypt');
 const {signUpValidation, loginValidation} = require('../utils/validator');
 const sendEmail = require("../utils/sendEmail.js");
-const { limiter } = require("../utils/rateLimiter.js");
+const {rateLimiter} = require("../utils/rateLimiter.js");
 
 const authRouter = express.Router();
 
@@ -27,7 +27,7 @@ authRouter.post("/signup", async(req, res) => {
     }
 })
 
-authRouter.post("/login", limiter(60 * 1000, 2), async(req,res) => {
+authRouter.post("/login", rateLimiter(10, 300, "login"), async(req,res) => {
     try{
         const {email, password} = req.body;
     loginValidation(email);
