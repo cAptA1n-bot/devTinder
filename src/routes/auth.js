@@ -7,7 +7,7 @@ const {rateLimiter} = require("../utils/rateLimiter.js");
 
 const authRouter = express.Router();
 
-authRouter.post("/signup", async(req, res) => {
+authRouter.post("/signup", rateLimiter(5, 60, "signup"), async(req, res) => {
     try{
         signUpValidation(req);
         const {firstName, lastName, email, password} = req.body;
@@ -27,7 +27,7 @@ authRouter.post("/signup", async(req, res) => {
     }
 })
 
-authRouter.post("/login", rateLimiter(10, 300, "login"), async(req,res) => {
+authRouter.post("/login", rateLimiter(5, 60, "login"), async(req,res) => {
     try{
         const {email, password} = req.body;
     loginValidation(email);

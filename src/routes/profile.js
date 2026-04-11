@@ -3,10 +3,11 @@ const {userAuth} = require('../middleware/auth');
 const {editDataValidation, isStrongPass, validateAge} = require('../utils/validator');
 const bcrypt = require('bcrypt');
 const {client} = require('../utils/redisClient.js')
+const {rateLimiter} = require('../utils/rateLimiter.js');
 
 const profileRouter = express.Router();
 
-profileRouter.get("/profile", userAuth, async(req,res) => {
+profileRouter.get("/profile", rateLimiter(100, 900, "profile"), userAuth, async(req,res) => {
     try{
         const user = req.user;
         res.send(user);
@@ -16,7 +17,7 @@ profileRouter.get("/profile", userAuth, async(req,res) => {
     }
 })
 
-profileRouter.patch("/profile/edit", userAuth, async(req,res) => {
+profileRouter.patch("/profile/edit", rateLimiter(100, 900, "profile"), userAuth, async(req,res) => {
     try{
         if(!editDataValidation(req)){
             res.status(404).send("Invalid edit request");
@@ -33,7 +34,7 @@ profileRouter.patch("/profile/edit", userAuth, async(req,res) => {
     }
 })
 
-profileRouter.patch("/profile/password", userAuth, async(req, res) => {
+profileRouter.patch("/profile/password", rateLimiter(2, 60, "profile"), userAuth, async(req, res) => {
     try{
         const {oldPassword, newPassword} = req.body;
     if(!(await req.user.validateUser(oldPassword))){

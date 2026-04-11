@@ -2,10 +2,11 @@ const express = require('express');
 const { userAuth } = require('../middleware/auth');
 const ConnectionRequestModel = require('../models/ConnectionRequest');
 const User = require('../models/user');
+const {rateLimiter} = require('../utils/rateLimiter');
 
 const requestRouter = express.Router();
 
-requestRouter.post("/request/send/:status/:userid", userAuth, async (req, res) => {
+requestRouter.post("/request/send/:status/:userid", rateLimiter(50, 60, "sendrequest"), userAuth, async (req, res) => {
     try {
         const fromUserId = req.user._id;
         const toUserId = req.params.userid;
@@ -40,7 +41,7 @@ requestRouter.post("/request/send/:status/:userid", userAuth, async (req, res) =
     }
 })
 
-requestRouter.post("/request/review/:status/:requestid", userAuth, async (req, res) => {
+requestRouter.post("/request/review/:status/:requestid", rateLimiter(50, 60, "reviewrequest"), userAuth, async (req, res) => {
     try {
         const { status, requestid } = req.params;
         const loggedinUser = req.user;
